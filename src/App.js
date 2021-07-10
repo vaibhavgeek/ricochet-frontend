@@ -64,7 +64,8 @@ class App extends Component {
       // Initializing Superfluid framework
       const sf = new SuperfluidSDK.Framework({
         ethers: new Web3Provider(window.ethereum),
-        tokens: ['fUSDC','ETH']
+        tokens: ['USDC','ETH'],
+        version: "v1"
       });
       await sf.initialize()
 
@@ -138,7 +139,7 @@ class App extends Component {
 
   async getTokenBalance(userAddress,tokenAddress) {
     var tokenInst = new this.state.web3.eth.Contract(erc20ABI,tokenAddress);
-    console.log("Address in getTokenBalance: ",userAddress)
+    console.log("Address in getTokenBalance: ",userAddress, tokenAddress)
     tokenInst.methods.balanceOf(userAddress).call().then(function (bal) {
         // console.log(tokenAddress,'balance is',bal)
         document.getElementById(`balance-${tokenAddress}`).innerHTML = (bal/1000000000000000000).toFixed(4);
@@ -162,7 +163,7 @@ class App extends Component {
     let sfUser = this.state.sfUser
     console.log("Creating flow with:",sfUser)
     const userData = { message: "here's a flow account 2", flowId: "1" } // This is just arbitrary
-    let flowInput = Math.round( ( document.getElementById("input-amt-"+ETHxAddress).value * Math.pow(10,18) ) / 2592000 ) // Say I start a stream of 10 USDCx per month. Is the flow in gwei (which is registered as to the second) calculated as [ (10 USDCx) *(10^18) ] / [30 * 24 * 60 * 60]  = 3858024691358.025 -> round to nearest int
+    let flowInput = Math.round( ( document.getElementById("input-amt-"+fUSDCxAddress).value * Math.pow(10,18) ) / 2592000 ) // Say I start a stream of 10 USDCx per month. Is the flow in gwei (which is registered as to the second) calculated as [ (10 USDCx) *(10^18) ] / [30 * 24 * 60 * 60]  = 3858024691358.025 -> round to nearest int
     console.log("Would flow:",flowInput)
 
     let isStreaming = false;
@@ -239,7 +240,7 @@ class App extends Component {
       await sf.host.batchCall(call);
     }
 
-    document.getElementById("input-amt-"+ETHxAddress).value = ""
+    document.getElementById("input-amt-"+fUSDCxAddress).value = ""
 
     // Defensive code: For some reason getOnlySuperAppFlows() doesn't update flowAmt properly when it's zero
     if (flowInput===0) {
@@ -310,10 +311,10 @@ class App extends Component {
                   <p>Your Balance:</p>
 
                   <p><span id='balance-0x0F1D7C55A2B133E000eA10EeC03c774e0d6796e8'>0</span> USDCx</p>
-                  <p><span id="balance-0x745861AeD1EEe363b4AaA5F1994Be40b1e05Ff90">0</span> DAIx</p>
+                  <p><span id="balance-0x745861AeD1EEe363b4AaA5F1994Be40b1e05Ff90">0</span> ETHx</p>
                   <p><span id="balance-0x369A77c1A8A38488cc28C2FaF81D2378B9321D8B">0</span> RIC</p>
                   <div>
-                  <input type="text" id="input-amt-0x745861AeD1EEe363b4AaA5F1994Be40b1e05Ff90" placeholder={( -( this.state.flowAmt*(30*24*60*60) )/Math.pow(10,18) ).toFixed(4)  }/>
+                  <input type="text" id="input-amt-0x0F1D7C55A2B133E000eA10EeC03c774e0d6796e8" placeholder={( -( this.state.flowAmt*(30*24*60*60) )/Math.pow(10,18) ).toFixed(4)  }/>
                   <button id="startFlowButton" onClick={this.startFlow}>Start</button>
                   <button id="stopFlowButton" onClick={this.stopFlow}>Stop</button>
                   </div>
