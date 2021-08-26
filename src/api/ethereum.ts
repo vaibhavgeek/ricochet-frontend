@@ -1,10 +1,11 @@
 import { getSuperFluid } from 'utils/fluidSDKinstance';
 import { getAddress } from 'utils/getAddress';
 import web3 from 'utils/web3instance';
+import { RICAddress } from 'constants/polygon_config';
 
 export const downgrade = (
-  contract: any, 
-  amount: string, 
+  contract: any,
+  amount: string,
   address: string,
 ) => contract.methods
   .downgrade(amount)
@@ -14,11 +15,11 @@ export const allowance = (
   contract: any,
   address: string,
   superTokenAddress: string,
-) => contract.methods 
+) => contract.methods
   .allowance(address, superTokenAddress)
   .call();
 
-export const approve = (  
+export const approve = (
   contract: any,
   address: string,
   tokenAddress: string,
@@ -28,8 +29,8 @@ export const approve = (
   .send({ from: address });
 
 export const upgrade = (
-  contract: any, 
-  amount: string, 
+  contract: any,
+  amount: string,
   address: string,
 ) => contract.methods
   .upgrade(amount)
@@ -37,7 +38,7 @@ export const upgrade = (
 
 export const approveSubscription = async (tokenAddress:string, exchangeAddress:string) => {
   const superFluid = await getSuperFluid();
-  
+
   const call = [
     [
       201, // approve the ticket fee
@@ -130,7 +131,25 @@ export const startFlow = async (
         ),
       ],
       [
-        201, // create constant flow (10/mo)
+        201, // approve the RIC subsidy
+        superFluid.agreements.ida.address,
+        web3.eth.abi.encodeParameters(
+          ['bytes', 'bytes'],
+          [
+            superFluid.agreements.ida.contract.methods
+              .approveSubscription(
+                RICAddress,
+                exchangeAddress,
+                1, // INDEX_ID
+                '0x',
+              )
+              .encodeABI(), // callData
+            '0x', // userData
+          ],
+        ),
+      ],
+      [
+        201, // create constant flow 
         superFluid.agreements.cfa.address,
         web3.eth.abi.encodeParameters(
           ['bytes', 'bytes'],
