@@ -69,5 +69,6 @@
     "hooks": {
       "pre-commit": "lint-staged && yarn tsc"
     }
-  }
+  },
+  "license" : "Business-Source-License-1.1"
 }
