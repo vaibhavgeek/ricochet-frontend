@@ -74,7 +74,6 @@ export const InvestContainer :React.FC = () => {
               totalFlow={state[element.flowKey]?.flowsOwned}
               personalFlow={state[element.flowKey]?.placeholder}
               mainLoading={isLoading}
-              flowType={element.type}
             />
           </div>
         ))}
